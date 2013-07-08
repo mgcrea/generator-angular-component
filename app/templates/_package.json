@@ -1,0 +1,40 @@
+{
+  "name": "angular-<%= name %>",
+  "version": "<%= props.version %>",
+  "description": "<%= props.name %>",
+  "keywords": [
+    "angular"
+  ],
+  "homepage": "<%= github.html_url %>/<%= name %>",
+  "bugs": "<%= github.html_url %>/<%= name %>/issues",
+  "author": {
+    "name": "<%= github.name %>",
+    "email": "<%= github.email %>",
+    "url": "<%= github.html_url %>"
+  },
+  "repository": {
+    "type": "git",
+    "url": "<%= github.html_url %>/<%= name %>.git"
+  },
+  "licenses": [
+    {
+      "type": "<%= props.license %>"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.3.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-contrib-less": "~0.6.1",
+    "connect-livereload": "~0.2.0",
+    "grunt-open": "~0.2.0",
+    "grunt-karma": "~0.4.5",
+    "grunt-ngmin": "0.0.3",
+    "grunt-bump": "~0.0.10",
+    "matchdep": "~0.1.2"
+  }
+}

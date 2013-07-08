@@ -1,0 +1,11 @@
+{
+  "name": "angular-<%= name %>",
+  "version": "<%= props.version %>",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "angular<%= props.angularUnstable ? '-unstable' : '' %>": "latest",
+    "angular-mocks": "latest",
+    "jquery": "latest"
+  }
+}
