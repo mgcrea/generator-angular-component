@@ -1,12 +1,12 @@
 {
-  "name": "generator-angular-module",
+  "name": "generator-angular-component",
   "version": "0.2.0",
   "description": "A generator for Yeoman",
   "keywords": [
     "yeoman-generator"
   ],
-  "homepage": "https://github.com/mgcrea/generator-angular-module",
-  "bugs": "https://github.com/mgcrea/generator-angular-module/issues",
+  "homepage": "https://github.com/mgcrea/generator-angular-component",
+  "bugs": "https://github.com/mgcrea/generator-angular-component/issues",
   "author": {
     "name": "Olivier Louvignes",
     "email": "olivier@mg-crea.com",
@@ -15,7 +15,7 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mgcrea/generator-angular-module.git"
+    "url": "git://github.com/mgcrea/generator-angular-component.git"
   },
   "scripts": {
     "test": "mocha"

@@ -3,7 +3,7 @@ var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
 var _ = require('lodash');
-var ncp = require('ncp').ncp;
+// var ncp = require('ncp').ncp;
 
 // Extract user info from github
 var GitHubApi = require('github');
@@ -21,7 +21,7 @@ var githubUserInfo = function (name, cb) {
   });
 };
 
-function AngularModule(args, options, config) {
+function AngularComponent(args, options, config) {
   /* jshint unused:false */
   yeoman.generators.Base.apply(this, arguments);
 
@@ -32,13 +32,13 @@ function AngularModule(args, options, config) {
   this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
 }
 
-module.exports = AngularModule;
+module.exports = AngularComponent;
 
-util.inherits(AngularModule, yeoman.generators.Base);
+util.inherits(AngularComponent, yeoman.generators.Base);
 
-// AngularModule.prototype.ncp = ncp;
+// AngularComponent.prototype.ncp = ncp;
 
-AngularModule.prototype.askFor = function askFor() {
+AngularComponent.prototype.askFor = function askFor() {
   var done = this.async();
 
   // have Yeoman greet the user.
@@ -77,7 +77,7 @@ AngularModule.prototype.askFor = function askFor() {
   }.bind(this));
 };
 
-AngularModule.prototype.userInfo = function userInfo() {
+AngularComponent.prototype.userInfo = function userInfo() {
   var done = this.async();
 
   githubUserInfo(this.props.githubUser, function (res) {
@@ -87,13 +87,13 @@ AngularModule.prototype.userInfo = function userInfo() {
   }.bind(this));
 };
 
-AngularModule.prototype.src = function src() {
+AngularComponent.prototype.src = function src() {
   this.mkdir('src');
   this.template('src/_main.js', 'src/' + this.name + '.js');
   this.mkdir('dist');
 };
 
-AngularModule.prototype.test = function test() {
+AngularComponent.prototype.test = function test() {
   this.mkdir('test');
   this.mkdir('test/spec');
   this.template('test/spec/_main.js', 'test/spec/' + this.name + '.js');
@@ -101,7 +101,7 @@ AngularModule.prototype.test = function test() {
   this.copy('test/jshintrc', 'test/.jshintrc');
 };
 
-AngularModule.prototype.projectfiles = function projectfiles() {
+AngularComponent.prototype.projectfiles = function projectfiles() {
   this.copy('editorconfig', '.editorconfig');
   this.copy('jshintrc', '.jshintrc');
   this.copy('gitignore', '.gitignore');
