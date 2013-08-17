@@ -113,7 +113,7 @@ module.exports = function(grunt) {
         options: {
           jshintrc: '.jshintrc'
         },
-        src: ['<%%= yo.src %>/*.js']
+        src: ['<%= yo.src %>/{,*/}*.js']
       },
       test: {
         options: {
@@ -140,7 +140,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['<%%= yo.src %>/<%%= pkg.name %>.js'],
-        dest: '<%%= yo.dist %>/angular-<%%= pkg.name %>.js'
+        dest: '<%%= yo.dist %>/<%%= pkg.name %>.js'
       }
       // dist: {
       //   files: {
@@ -155,7 +155,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['<%%= yo.src %>/<%%= pkg.name %>.js'],
-        dest: '<%%= yo.dist %>/angular-<%%= pkg.name %>.js'
+        dest: '<%%= yo.dist %>/<%%= pkg.name %>.js'
       }
     },
     uglify: {
@@ -164,7 +164,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: '<%%= concat.dist.dest %>',
-        dest: '<%%= yo.dist %>/angular-<%%= pkg.name %>.min.js'
+        dest: '<%%= yo.dist %>/<%%= pkg.name %>.min.js'
       }
     }
   });
