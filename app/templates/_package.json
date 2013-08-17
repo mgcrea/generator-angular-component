@@ -1,5 +1,5 @@
 {
-  "name": "angular-<%= name %>",
+  "name": "<%= name %>",
   "version": "<%= props.version %>",
   "description": "<%= props.name %>",
   "keywords": [
