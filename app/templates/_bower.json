@@ -1,6 +1,26 @@
 {
   "name": "<%= name %>",
   "version": "<%= props.version %>",
+  "description": "<%= props.name %>",
+  "keywords": [
+    "angular"
+  ],
+  "homepage": "<%= github.html_url %>/<%= name %>",
+  "bugs": "<%= github.html_url %>/<%= name %>/issues",
+  "author": {
+    "name": "<%= github.name %>",
+    "email": "<%= github.email %>",
+    "url": "<%= github.html_url %>"
+  },
+  "repository": {
+    "type": "git",
+    "url": "<%= github.html_url %>/<%= name %>.git"
+  },
+  "licenses": [
+    {
+      "type": "<%= props.license %>"
+    }
+  ],
   "dependencies": {
   },
   "devDependencies": {

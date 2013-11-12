@@ -3,26 +3,19 @@
 
 module.exports = function(grunt) {
 
-  // Configurable paths
-  var yoConfig = {
-    livereload: 35729,
-    src: 'src',
-    dist: 'dist'
-  };
-
-  // Livereload setup
-  var lrSnippet = require('connect-livereload')({port: yoConfig.livereload});
-  var mountFolder = function (connect, dir) {
-    return connect.static(require('path').resolve(dir));
-  };
-
-  // Load all grunt tasks
-  require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+  require('load-grunt-tasks')(grunt);
+  require('time-grunt')(grunt);
 
   // Project configuration
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    yo: yoConfig,
+    pkg: require('./package.json'),
+    bower: require('./bower.json'),
+    yo: {
+      // Configurable paths
+      name: '<%%= pkg.name %>',
+      src: require('./bower.json').appPath || 'src',
+      dist: 'dist'
+    },
     meta: {
       banner: '/**\n' +
       ' * <%%= pkg.name %>\n' +
@@ -35,6 +28,56 @@ module.exports = function(grunt) {
     open: {
       server: {
         path: 'http://localhost:<%%= connect.options.port %>'
+      }
+    },
+    watch: {
+      test: {
+        files: '<%%= jshint.test.src %>',
+        tasks: ['jshint:test', 'karma:unit']
+      },
+      less: {
+        files: ['<%%= yo.src %>/{,*/}*.less'],
+        tasks: ['less:dev']
+      },
+      app: {
+        options: {
+          livereload: '<%%= connect.options.livereload %>'
+        },
+        files: [
+          '<%%= yo.src %>/{,*/}*.html',
+          '{.tmp,<%%= yo.src %>}/styles/{,*/}*.css',
+          '{.tmp,<%%= yo.src %>}/{,*/}*.json',
+          '{.tmp,<%%= yo.src %>}/scripts/{,*/}*.js',
+          '{.tmp,<%%= yo.src %>}/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+        ]
+      }
+    },
+    connect: {
+      options: {
+        // Use a system-assigned port.
+        port: 0,
+        // Change this to '0.0.0.0' to access the server from outside.
+        hostname: '127.0.0.1',
+        livereload: 35729
+      },
+      livereload: {
+        options: {
+          open: true,
+          base: [
+            '.tmp',
+            '<%%= yo.src %>'
+          ]
+        }
+      },
+      test: {
+        options: {
+          port: 9001,
+          base: [
+            '.tmp',
+            'test',
+            '<%%= yo.src %>'
+          ]
+        }
       }
     },
     clean: {
@@ -50,70 +93,37 @@ module.exports = function(grunt) {
       },
       server: '.tmp'
     },
-    watch: {
-      gruntfile: {
-        files: '<%%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
-      },
-      less: {
-        files: ['<%%= yo.src %>/{,*/}*.less'],
-        tasks: ['less:dist']
-      },
-      app: {
-        files: [
-          '<%%= yo.src %>/{,*/}*.html',
-          '{.tmp,<%%= yo.src %>}/{,*/}*.css',
-          '{.tmp,<%%= yo.src %>}/{,*/}*.js'
-        ],
-        options: {
-          livereload: yoConfig.livereload
-        }
-      },
-      test: {
-        files: '<%%= jshint.test.src %>',
-        tasks: ['jshint:test', 'qunit']
-      }
-    },
-    connect: {
-      options: {
-        port: 9000,
-        hostname: '0.0.0.0' // Change this to '0.0.0.0' to access the server from outside.
-      },
-      livereload: {
-        options: {
-          middleware: function (connect) {
-            return [
-              lrSnippet,
-              mountFolder(connect, '.tmp'),
-              mountFolder(connect, yoConfig.src)
-            ];
-          }
-        }
-      }
-    },
     less: {
       options: {
-        // dumpLineNumbers: 'all',
         paths: ['<%%= yo.src %>']
       },
-      dist: {
+      dev: {
+        options: {
+          dumpLineNumbers: 'all',
+        },
         files: {
-          '<%%= yo.src %>/<%%= yo.name %>.css': '<%%= yo.src %>/<%%= yo.name %>.less'
+          '<%%= yo.src %>/<%%= pkg.name %>.css': ['<%%= yo.src %>/{,*/}*.less']
+        }
+      },
+      dist: {
+        options: {
+          compress: true,
+          report: 'gzip'
+        },
+        files: {
+          '<%%= yo.dist %>/<%%= pkg.name %>.css': ['<%%= yo.src %>/{,*/}*.less']
         }
       }
     },
     jshint: {
-      gruntfile: {
-        options: {
-          jshintrc: '.jshintrc'
-        },
-        src: 'Gruntfile.js'
-      },
       src: {
         options: {
           jshintrc: '.jshintrc'
         },
-        src: ['<%%= yo.src %>/{,*/}*.js']
+        src: [
+          'Gruntfile.js',
+          '<%%= yo.src %>/{,*/}*.js'
+        ]
       },
       test: {
         options: {
@@ -134,40 +144,70 @@ module.exports = function(grunt) {
         autoWatch: true
       }
     },
-    ngmin: {
-      options: {
-        banner: '<%%= meta.banner %>'
-      },
-      dist: {
-        src: ['<%%= yo.src %>/<%%= pkg.name %>.js'],
-        dest: '<%%= yo.dist %>/<%%= pkg.name %>.js'
-      }
-      // dist: {
-      //   files: {
-      //     '<%= yeoman.dist %>/<%= yeoman.name %>.js': '<%= yeoman.app %>/<%= yeoman.name %>.js'
-      //   }
-      // }
-    },
     concat: {
       options: {
         banner: '<%%= meta.banner %>',
         stripBanners: true
       },
       dist: {
-        src: ['<%%= yo.src %>/<%%= pkg.name %>.js'],
-        dest: '<%%= yo.dist %>/<%%= pkg.name %>.js'
+        options: {
+          // Replace all 'use strict' statements in the code with a single one at the top
+          banner: '(function(window, document, undefined) {\n\'use strict\';\n',
+          footer: '\n})(window, document);\n',
+          process: function(src, filepath) {
+            return '// Source: ' + filepath + '\n' +
+              src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '$1');
+          }
+        },
+        files: {
+          '<%%= yo.dist %>/<%%= pkg.name %>.js': [
+            '<%%= yo.src %>/{,*/}*.js'
+          ]
+        }
+      }
+    },
+    ngmin: {
+      options: {
+        expand: true
+      },
+      dist: {
+        files: {
+          '<%%= yo.dist %>/scripts/<%%= yo.name %>.js': ['<%%= yo.dist %>/scripts/<%%= yo.name %>.js']
+        }
+      }
+    },
+    ngtemplates: {
+      options: {
+        module: 'ngTemplates',
+      },
+      dist: {
+        files: {
+          '<%%= yo.dist %>/<%%= yo.name %>.tpl.js': [
+            '<%%= yo.src %>/{,*/}*.html'
+          ]
+        }
       }
     },
     uglify: {
       options: {
-        banner: '<%%= meta.banner %>'
+        banner: '<%%= meta.banner %>',
+        report: 'gzip'
       },
       dist: {
-        src: '<%%= concat.dist.dest %>',
-        dest: '<%%= yo.dist %>/<%%= pkg.name %>.min.js'
+        files: {
+          '<%%= yo.dist %>/scripts/<%%= yo.name %>.min.js': ['<%%= Object.keys(ngmin.dist.files)[0] %>'],
+          '<%%= yo.dist %>/scripts/<%%= yo.name %>.tpl.min.js': ['<%%= Object.keys(ngtemplates.dist.files)[0] %>']
+        }
       }
     }
   });
+
+  grunt.registerTask('server', [
+    'clean:server',
+    'less:dev',
+    'connect:livereload',
+    'watch'
+  ]);
 
   grunt.registerTask('test', [
     'jshint',

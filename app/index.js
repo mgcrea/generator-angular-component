@@ -10,6 +10,11 @@ var GitHubApi = require('github');
 var github = new GitHubApi({
   version: '3.0.0'
 });
+
+var lcfirst = function(string) {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+}
+
 var githubUserInfo = function (name, cb) {
   github.user.getFrom({
     user: name
@@ -51,7 +56,7 @@ AngularComponent.prototype.askFor = function askFor() {
   }, {
     name: 'name',
     message: 'What\'s the base name of your project?',
-    default: 'myModule'
+    default: path.basename(process.env.PWD)
   }, {
     name: 'license',
     message: 'Under which lincense your project shall be released?',
@@ -66,12 +71,23 @@ AngularComponent.prototype.askFor = function askFor() {
     name: 'cssRequired',
     message: 'Does your module requires CSS styles?',
     default: false
+  }, {
+    type: 'confirm',
+    name: 'templatesRequired',
+    message: 'Does your module requires HTML templates?',
+    default: false
+  }, {
+    type: 'confirm',
+    name: 'docsNeeded',
+    message: 'Do you want me to generate docs for you?',
+    default: true
   }];
 
   this.prompt(prompts, function (props) {
     this.props = props;
     // For easier access in the templates.
     this.name = this._.dasherize(props.name);
+    this.moduleName = lcfirst(this._.camelize(props.name.replace(/^angular/, '')));
     props.version = '0.0.1';
     done();
   }.bind(this));
@@ -90,6 +106,8 @@ AngularComponent.prototype.userInfo = function userInfo() {
 AngularComponent.prototype.src = function src() {
   this.mkdir('src');
   this.template('src/_main.js', 'src/' + this.name + '.js');
+  if(this.props.cssRequired) this.template('src/_main.less', 'src/' + this.name + '.less');
+  if(this.props.templatesRequired) this.template('src/_main.html', 'src/' + this.name + '.tpl.html');
   this.mkdir('dist');
 };
 
@@ -99,6 +117,12 @@ AngularComponent.prototype.test = function test() {
   this.template('test/spec/_main.js', 'test/spec/' + this.name + '.js');
   this.template('_karma.conf.js', 'karma.conf.js');
   this.copy('test/jshintrc', 'test/.jshintrc');
+};
+
+AngularComponent.prototype.docs = function docs() {
+  if(!this.props.docsNeeded) return;
+  this.mkdir('docs');
+  this.template('docs/_index.html', 'docs/index.html');
 };
 
 AngularComponent.prototype.projectfiles = function projectfiles() {
@@ -111,6 +135,5 @@ AngularComponent.prototype.projectfiles = function projectfiles() {
   this.template('Gruntfile.js');
   this.template('_bower.json', 'bower.json');
   this.template('_package.json', 'package.json');
-  this.copy('CONTRIBUTING.md', 'CONTRIBUTING.md');
   this.copy('CONTRIBUTING.md', 'CONTRIBUTING.md');
 };
