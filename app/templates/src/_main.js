@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('<%= props.githubUser %>.<%= moduleName %>', [])
+angular.module('<%= props.githubUser %>.<%= _.camelize(props.name) %>', [])
 
   .directive('myDirective', function() {
 
