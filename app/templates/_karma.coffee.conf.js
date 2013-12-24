@@ -15,9 +15,8 @@ module.exports = function(config) {
     files: [
       'bower_components/angular<%= props.angularUnstable ? '-unstable' : '' %>/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'src/*.js',
-      'bower_components/jquery/jquery.js',
-      'test/spec/*.js'
+      'dist/scripts/*.js',
+      'bower_components/jquery/jquery.js'
     ],
 
     // list of files to exclude

@@ -131,10 +131,11 @@ AngularComponent.prototype.test = function test() {
   this.mkdir('test/spec');
   if(this.env.options.coffee) {
     this.template('test/spec/_main.coffee', 'test/spec/' + this.name + '.coffee');
+    this.template('_karma.coffee.conf.js', 'karma.conf.js');
   } else {
     this.template('test/spec/_main.js', 'test/spec/' + this.name + '.js');
+    this.template('_karma.conf.js', 'karma.conf.js');
   }
-  this.template('_karma.conf.js', 'karma.conf.js');
   this.copy('test/jshintrc', 'test/.jshintrc');
 };
 
