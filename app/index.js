@@ -35,6 +35,16 @@ function AngularComponent(args, options, config) {
   });
 
   this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+
+  if (typeof this.env.options.coffee === 'undefined') {
+    this.option('coffee', {
+      desc: 'Generate CoffeeScript instead of JavaScript'
+    });
+    if (!this.options.coffee && this.expandFiles('/src/**/*.coffee', {}).length > 0) {
+      this.options.coffee = true;
+    }
+    this.env.options.coffee = this.options.coffee;
+  }
 }
 
 module.exports = AngularComponent;
@@ -105,7 +115,12 @@ AngularComponent.prototype.userInfo = function userInfo() {
 
 AngularComponent.prototype.src = function src() {
   this.mkdir('src');
-  this.template('src/_main.js', 'src/' + this.name + '.js');
+  if(this.env.options.coffee) {
+    this.template('src/_main.coffee', 'src/' + this.name + '.coffee');
+  } else {
+    this.template('src/_main.js', 'src/' + this.name + '.js');
+  }
+
   if(this.props.cssRequired) this.template('src/_main.less', 'src/' + this.name + '.less');
   if(this.props.templatesRequired) this.template('src/_main.html', 'src/' + this.name + '.tpl.html');
   this.mkdir('dist');
@@ -114,8 +129,13 @@ AngularComponent.prototype.src = function src() {
 AngularComponent.prototype.test = function test() {
   this.mkdir('test');
   this.mkdir('test/spec');
-  this.template('test/spec/_main.js', 'test/spec/' + this.name + '.js');
-  this.template('_karma.conf.js', 'karma.conf.js');
+  if(this.env.options.coffee) {
+    this.template('test/spec/_main.coffee', 'test/spec/' + this.name + '.coffee');
+    this.template('_karma.coffee.conf.js', 'karma.conf.js');
+  } else {
+    this.template('test/spec/_main.js', 'test/spec/' + this.name + '.js');
+    this.template('_karma.conf.js', 'karma.conf.js');
+  }
   this.copy('test/jshintrc', 'test/.jshintrc');
 };
 
@@ -132,7 +152,11 @@ AngularComponent.prototype.projectfiles = function projectfiles() {
   this.copy('travis.yml', '.travis.yml');
 
   this.template('README.md');
-  this.template('Gruntfile.js');
+  if(this.env.options.coffee) {
+    this.template('_Gruntfile.coffee.js', 'Gruntfile.js');
+  } else {
+    this.template('_Gruntfile.js', 'Gruntfile.js');
+  }
   this.template('_bower.json', 'bower.json');
   this.template('_package.json', 'package.json');
   this.copy('CONTRIBUTING.md', 'CONTRIBUTING.md');
