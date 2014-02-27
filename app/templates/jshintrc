@@ -1,6 +1,7 @@
 {
   "node": true,
   "browser": true,
+  "devel": false,
   "esnext": true,
   "bitwise": true,
   "camelcase": true,
@@ -16,10 +17,12 @@
   "undef": true,
   "unused": false,
   "strict": true,
-  "globalstrict": true,
   "trailing": true,
   "smarttabs": true,
-  "predef": [
-    "angular"
-  ]
+  "boss": false,
+  "eqnull": false,
+  "expr": true,
+  "globals": {
+    "angular": false
+  }
 }

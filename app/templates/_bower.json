@@ -1,11 +1,11 @@
 {
-  "name": "<%= name %>",
+  "name": "<%= props.name %>",
   "version": "<%= props.version %>",
-  "description": "<%= props.name %>",
+  "description": "<%= props.description %>",
   "keywords": [
     "angular"
   ],
-  "homepage": "<%= github.html_url %>/<%= name %>",
+<% if(github) { %>  "homepage": "<%= github.html_url %>/<%= name %>",
   "bugs": "<%= github.html_url %>/<%= name %>/issues",
   "author": {
     "name": "<%= github.name %>",
@@ -15,17 +15,13 @@
   "repository": {
     "type": "git",
     "url": "<%= github.html_url %>/<%= name %>.git"
-  },
-  "licenses": [
+  },<% } %>
+<% if (props.license) { %>  "licenses": [
     {
       "type": "<%= props.license %>"
     }
-  ],
+  ],<% } %>
   "dependencies": {
-  },
-  "devDependencies": {
-    "angular<%= props.angularUnstable ? '-unstable' : '' %>": "latest",
-    "angular-mocks": "latest",
-    "jquery": "latest"
+    "angular": "<%= props.ngVersion %>"
   }
 }

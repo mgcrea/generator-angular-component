@@ -1,4 +1,4 @@
-node_modules/
-temp/
-
 .DS_Store
+bower_components/
+node_modules/
+tmp/

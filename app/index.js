@@ -1,33 +1,26 @@
 'use strict';
+
+// Required modules
+//
 var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
-var _ = require('lodash');
-// var ncp = require('ncp').ncp;
+var Promise = require('bluebird');
+var semver = require('semver');
+var github = new (require('github'))({version: '3.0.0'});
 
-// Extract user info from github
-var GitHubApi = require('github');
-var github = new GitHubApi({
-  version: '3.0.0'
-});
-
-var lcfirst = function(string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
-}
-
-var githubUserInfo = function (name, cb) {
-  github.user.getFrom({
-    user: name
-  }, function (err, res) {
-    if (err) {
-      throw err;
-    }
-    cb(JSON.parse(JSON.stringify(res)));
-  });
+// Debug
+global.d = function() {
+  var args = Array.prototype.slice.call(arguments);
+  util.log((new Date()).toISOString() + ' - ' + util.inspect.call(null, args.length === 1 ? args[0] : args, false, 10, true));
+};
+global.dd = function() {
+  global.d.apply(null, arguments);
+  util.log((new Error()).stack);
+  process.exit(1);
 };
 
-function AngularComponent(args, options, config) {
-  /* jshint unused:false */
+var Generator = module.exports = function Generator(args, options, config) {
   yeoman.generators.Base.apply(this, arguments);
 
   this.on('end', function () {
@@ -35,105 +28,134 @@ function AngularComponent(args, options, config) {
   });
 
   this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
-}
+};
 
-module.exports = AngularComponent;
+util.inherits(Generator, yeoman.generators.Base);
 
-util.inherits(AngularComponent, yeoman.generators.Base);
-
-// AngularComponent.prototype.ncp = ncp;
-
-AngularComponent.prototype.askFor = function askFor() {
+Generator.prototype.askFor = function askFor() {
   var done = this.async();
 
-  // have Yeoman greet the user.
+  // Have Yeoman greet the user.
   console.log(this.yeoman);
 
-  var prompts = [{
-    name: 'githubUser',
-    message: 'Would you mind telling me your username on Github?',
-    default: 'username'
-  }, {
-    name: 'name',
-    message: 'What\'s the base name of your project?',
-    default: path.basename(process.env.PWD)
-  }, {
-    name: 'license',
-    message: 'Under which lincense your project shall be released?',
-    default: 'MIT'
-  }, {
-    type: 'confirm',
-    name: 'angularUnstable',
-    message: 'Do you need the unstable branch of AngularJS?',
-    default: false
-  }, {
-    type: 'confirm',
-    name: 'cssRequired',
-    message: 'Does your module requires CSS styles?',
-    default: false
-  }, {
-    type: 'confirm',
-    name: 'templatesRequired',
-    message: 'Does your module requires HTML templates?',
-    default: false
-  }, {
-    type: 'confirm',
-    name: 'docsNeeded',
-    message: 'Do you want me to generate docs for you?',
-    default: true
-  }];
+  // var props = this.props = {
+  //   ngVersion: '~1.2.10',
+  //   locale: 'fr',
+  //   ngModules: ['animate', 'cookies', 'route', 'sanitize'],
+  //   components: ['bootstrap:~3.1.0', 'angular-strap:~2.0.0', 'font-awesome:~4.0.0'],
+  //   cssPreprocessor: 'less',
+  //   supportLegacy: 'yes',
+  //   name: path.basename(process.env.PWD),
+  //   license: 'MIT',
+  //   ghUser: 'mgcrea'
+  // };
+  // this.name = this._.dasherize(props.name);
+  // props.title = this._.classify(props.name);
+  // props.description = 'Yet another amazing AngularJS app';
+  // props.version = '0.0.1';
 
-  this.prompt(prompts, function (props) {
+  // // Modules
+  // props.modules = this._.clone(props.ngModules)
+  // .map(this._.classify)
+  // .map(function(name) {
+  //   return 'ng' + name;
+  // });
+  // if(props.components.indexOf('angular-strap:~2.0.0')) {
+  //   props.modules.push('mgcrea.ngStrap');
+  // }
+  // return done();
+
+  var versions = {
+    'angular': '~1.2.10',
+  };
+
+  var prompts = [
+    {
+      name: 'ngVersion',
+      message: 'What version of angular would you like to use?',
+      validate: function(value) {
+        return semver.validRange(value) ? true : 'Please enter a valid semantic version (semver.org)';
+      },
+      default: versions['angular']
+    },
+    {
+      name: 'jsPreprocessor',
+      message: 'Should I set up one of those JS preprocessors for you?',
+      type: 'list',
+      choices: ['none', 'coffee'],
+      default: 0
+    },
+    {
+      name: 'cssPreprocessor',
+      message: 'Should I set up one of those CSS preprocessors for you?',
+      type: 'list',
+      choices: ['none', 'less', 'sass'],
+      default: 1
+    },
+    {
+      name: 'name',
+      message: 'What\'s the base name of your project?',
+      default: path.basename(process.env.PWD)
+    },
+    {
+      name: 'license',
+      message: 'Under which lincense your project shall be released?',
+      default: 'MIT'
+    },
+    {
+      name: 'ghUser',
+      message: 'Would you mind telling me your username on GitHub?',
+      default: 'mgcrea'
+    }
+  ];
+
+  this.prompt(prompts, function(props) {
     this.props = props;
-    // For easier access in the templates.
+    this.versions = versions;
     this.name = this._.dasherize(props.name);
-    this.moduleName = lcfirst(this._.camelize(props.name.replace(/^angular/, '')));
-    props.version = '0.0.1';
+    if(!props.locale) props.locale = 'en';
+    props.title = this._.classify(props.name);
+    props.description = 'Yet another amazing AngularJS app';
+    props.version = '0.1.0';
     done();
   }.bind(this));
+
 };
 
-AngularComponent.prototype.userInfo = function userInfo() {
-  var done = this.async();
+Generator.prototype.userInfo = function userInfo() {
 
-  githubUserInfo(this.props.githubUser, function (res) {
-    /* jshint camelcase:false */
-    this.github = _.pick(res, 'name', 'email', 'html_url');
-    done();
-  }.bind(this));
+  var self = this, done = this.async(), props = this.props;
+  if(!props.ghUser) done();
+
+  Promise.promisify(github.user.getFrom)({user: props.ghUser})
+  .then(function(user) {
+    self.github = self._.pick(user, 'name', 'email', 'html_url');
+  }).then(done);
+
 };
 
-AngularComponent.prototype.src = function src() {
-  this.mkdir('src');
-  this.template('src/_main.js', 'src/' + this.name + '.js');
-  if(this.props.cssRequired) this.template('src/_main.less', 'src/' + this.name + '.less');
-  if(this.props.templatesRequired) this.template('src/_main.html', 'src/' + this.name + '.tpl.html');
-  this.mkdir('dist');
-};
+Generator.prototype.projectFiles = function projectFiles() {
 
-AngularComponent.prototype.test = function test() {
-  this.mkdir('test');
-  this.mkdir('test/spec');
-  this.template('test/spec/_main.js', 'test/spec/' + this.name + '.js');
-  this.template('_karma.conf.js', 'karma.conf.js');
-  this.copy('test/jshintrc', 'test/.jshintrc');
-};
-
-AngularComponent.prototype.docs = function docs() {
-  if(!this.props.docsNeeded) return;
-  this.mkdir('docs');
-  this.template('docs/_index.html', 'docs/index.html');
-};
-
-AngularComponent.prototype.projectfiles = function projectfiles() {
+  // Dotfiles
+  this.copy('gitignore', '.gitignore');
+  // this.copy('gitattributes', '.gitattributes');
   this.copy('editorconfig', '.editorconfig');
   this.copy('jshintrc', '.jshintrc');
-  this.copy('gitignore', '.gitignore');
-  this.copy('travis.yml', '.travis.yml');
+  this.copy('bowerrc', '.bowerrc');
 
-  this.template('README.md');
-  this.template('Gruntfile.js');
-  this.template('_bower.json', 'bower.json');
-  this.template('_package.json', 'package.json');
-  this.copy('CONTRIBUTING.md', 'CONTRIBUTING.md');
+  // Package
+  this.template('_Gruntfile.js', 'Gruntfile.js');
+  this.copy('_package.json', 'package.json');
+  this.copy('_bower.json', 'bower.json');
+
 };
+
+Generator.prototype.app = function app() {
+
+  this.mkdir('src');
+
+  // Scripts
+  this.copy('src/_main.js', 'src/' + this.name + '.js');
+
+};
+

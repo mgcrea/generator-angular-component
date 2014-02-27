@@ -1,11 +1,11 @@
 {
-  "name": "<%= name %>",
+  "name": "<%= props.name %>",
   "version": "<%= props.version %>",
-  "description": "<%= props.name %>",
+  "description": "<%= props.description %>",
   "keywords": [
     "angular"
   ],
-  "homepage": "<%= github.html_url %>/<%= name %>",
+<% if(github) { %>  "homepage": "<%= github.html_url %>/<%= name %>",
   "bugs": "<%= github.html_url %>/<%= name %>/issues",
   "author": {
     "name": "<%= github.name %>",
@@ -15,38 +15,36 @@
   "repository": {
     "type": "git",
     "url": "<%= github.html_url %>/<%= name %>.git"
-  },
-  "licenses": [
+  },<% } %>
+<% if (props.license) { %>  "licenses": [
     {
       "type": "<%= props.license %>"
     }
-  ],
+  ],<% } %>
+  "dependencies": {},
   "devDependencies": {
-    "connect-livereload": "~0.3.0",
-    "grunt": "~0.4.1",
-    "grunt-angular-templates": "~0.4.7",
-    "grunt-bump": "0.0.11",
+    "grunt": "~0.4.2",
+    "grunt-angular-templates": "~0.5.3",
+    "grunt-autoprefixer": "~0.7.2",
+    "grunt-bower-install": "~1.0.0",
+    "grunt-concurrent": "~0.4.3",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-connect": "~0.5.0",
-    "grunt-contrib-htmlmin": "~0.1.3",
-    "grunt-contrib-jshint": "~0.7.1",
-    "grunt-contrib-less": "~0.8.1",
-    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-contrib-connect": "~0.7.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-cssmin": "~0.8.0",
+    "grunt-contrib-htmlmin": "~0.2.0",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-less": "~0.9.0",
+    "grunt-contrib-uglify": "~0.3.2",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-karma": "~0.6.2",
+    "grunt-newer": "~0.6.1",
+    "grunt-nginclude": "~0.3.1",
     "grunt-ngmin": "0.0.3",
-    "grunt-open": "~0.2.2",
-    "karma": "~0.10.4",
-    "karma-chrome-launcher": "~0.1.0",
-    "karma-coffee-preprocessor": "~0.1.0",
-    "karma-firefox-launcher": "~0.1.0",
-    "karma-html2js-preprocessor": "~0.1.0",
-    "karma-jasmine": "~0.1.3",
-    "karma-phantomjs-launcher": "~0.1.0",
-    "karma-requirejs": "~0.1.0",
-    "karma-script-launcher": "~0.1.0",
-    "load-grunt-tasks": "~0.2.0",
-    "time-grunt": "~0.1.2"
+    "grunt-rev": "~0.1.0",
+    "grunt-usemin": "~2.0.2",
+    "jshint-stylish": "~0.1.5",
+    "load-grunt-tasks": "~0.4.0"
   }
 }
