@@ -95,7 +95,7 @@ Generator.prototype.askFor = function askFor() {
     {
       name: 'name',
       message: 'What\'s the base name of your project?',
-      default: path.basename(process.env.PWD)
+      default: path.basename(process.cwd())
     },
     {
       name: 'license',
@@ -106,6 +106,13 @@ Generator.prototype.askFor = function askFor() {
       name: 'ghUser',
       message: 'Would you mind telling me your username on GitHub?',
       default: 'mgcrea'
+    },
+    {
+      name: 'moduleType',
+      message: 'Would kind of module do you want to create?',
+      type: 'list',
+      choices: ['directive', 'factory', 'service', 'filter'],
+      default: 0
     }
   ];
 
@@ -119,7 +126,6 @@ Generator.prototype.askFor = function askFor() {
     props.version = '0.1.0';
     done();
   }.bind(this));
-
 };
 
 Generator.prototype.userInfo = function userInfo() {
@@ -131,7 +137,6 @@ Generator.prototype.userInfo = function userInfo() {
   .then(function(user) {
     self.github = self._.pick(user, 'name', 'email', 'html_url');
   }).then(done);
-
 };
 
 Generator.prototype.projectFiles = function projectFiles() {
@@ -147,7 +152,6 @@ Generator.prototype.projectFiles = function projectFiles() {
   this.template('_Gruntfile.js', 'Gruntfile.js');
   this.copy('_package.json', 'package.json');
   this.copy('_bower.json', 'bower.json');
-
 };
 
 Generator.prototype.app = function app() {
@@ -155,7 +159,6 @@ Generator.prototype.app = function app() {
   this.mkdir('src');
 
   // Scripts
-  this.copy('src/_main.js', 'src/' + this.name + '.js');
-
+  this.copy('src/_' + this.props.moduleType+ '.js', 'src/' + this.name + '.js');
 };
 
