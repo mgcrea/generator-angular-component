@@ -12,6 +12,9 @@
     "email": "<%= github.email %>",
     "url": "<%= github.html_url %>"
   },
+  "scripts": {
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+  },
   "repository": {
     "type": "git",
     "url": "<%= github.html_url %>/<%= name %>.git"
