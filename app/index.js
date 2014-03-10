@@ -95,7 +95,7 @@ Generator.prototype.askFor = function askFor() {
     {
       name: 'name',
       message: 'What\'s the base name of your project?',
-      default: path.basename(process.env.PWD)
+      default: path.basename(process.cwd())
     },
     {
       name: 'license',
