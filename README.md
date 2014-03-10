@@ -10,6 +10,20 @@ A lightweight AngularJS generator for [Yeoman](http://yeoman.io). Ideally suited
 - Install the generator: `npm install -g generator-angular-component`
 - Run: `yo angular-component`
 
+## Usage
+
+#### Testing
+
+- Run: `grunt test`
+- For continous testing run `grunt karma:server`
+
+#### Building
+
+- Run: `grunt build`
+
+#### Releasing
+
+- Run: `grunt release`
 
 ## Structure
 
